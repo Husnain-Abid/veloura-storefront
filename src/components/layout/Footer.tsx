@@ -1,66 +1,78 @@
-import React from "react"
-import { Link } from "wouter"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { Globe, MapPin, Phone, Mail } from "lucide-react";
 
-export function Footer() {
+export const Footer = () => {
   return (
-    <footer className="bg-foreground text-background pt-16 pb-8">
-      <div className="container mx-auto px-4 lg:px-8">
+    <footer className="bg-[#f9f9f9] pt-20 pb-10 border-t border-gray-100">
+      <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          <div className="flex flex-col gap-6">
-            <h2 className="font-serif text-3xl font-bold">Veloura.</h2>
-            <p className="text-sm text-gray-400 max-w-xs leading-relaxed">
-              Quiet, confident fashion for women who want expressive western silhouettes with an editorial point of view.
-            </p>
-          </div>
-          
+          {/* Brand */}
           <div>
-            <h3 className="uppercase tracking-widest text-sm font-medium mb-6">Shop</h3>
-            <ul className="flex flex-col gap-4 text-sm text-gray-400">
-              <li><Link href="/shop?new=true" className="hover:text-white transition-colors">New Arrivals</Link></li>
-              <li><Link href="/shop?category=Dresses" className="hover:text-white transition-colors">Dresses</Link></li>
-              <li><Link href="/shop?category=Outerwear" className="hover:text-white transition-colors">Outerwear</Link></li>
-              <li><Link href="/shop" className="hover:text-white transition-colors">All Products</Link></li>
+            <Link href="/" className="text-2xl font-bold tracking-tighter uppercase mb-6 block">
+              ELEGANCE
+            </Link>
+            <p className="text-gray-600 text-sm leading-relaxed mb-6">
+              Premium women's fashion destination in Pakistan. We bring you the latest in Western Wear and Luxury Intimates.
+            </p>
+            <div className="flex items-center space-x-4">
+              <Link href="#" className="hover:text-gray-400 transition-colors"><Globe className="w-5 h-5" /></Link>
+              <Link href="#" className="hover:text-gray-400 transition-colors"><Globe className="w-5 h-5" /></Link>
+              <Link href="#" className="hover:text-gray-400 transition-colors"><Globe className="w-5 h-5" /></Link>
+              <Link href="#" className="hover:text-gray-400 transition-colors"><Globe className="w-5 h-5" /></Link>
+            </div>
+          </div>
+
+          {/* Shop */}
+          <div>
+            <h4 className="font-bold uppercase tracking-widest text-sm mb-6">Shop</h4>
+            <ul className="space-y-4 text-sm text-gray-600">
+              <li><Link href="/shop?category=new-arrivals" className="hover:text-black transition-colors">New Arrivals</Link></li>
+              <li><Link href="/shop?category=western-wear" className="hover:text-black transition-colors">Western Wear</Link></li>
+              <li><Link href="/shop?category=undergarments" className="hover:text-black transition-colors">Undergarments</Link></li>
+              <li><Link href="/shop?category=flash-sale" className="hover:text-black transition-colors">Flash Sale</Link></li>
             </ul>
           </div>
-          
+
+          {/* Customer Service */}
           <div>
-            <h3 className="uppercase tracking-widest text-sm font-medium mb-6">Support</h3>
-            <ul className="flex flex-col gap-4 text-sm text-gray-400">
-              <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
-              <li><Link href="/size-guide" className="hover:text-white transition-colors">Size Guide</Link></li>
-              <li><Link href="/policies" className="hover:text-white transition-colors">Returns & Exchanges</Link></li>
-              <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+            <h4 className="font-bold uppercase tracking-widest text-sm mb-6">Policies</h4>
+            <ul className="space-y-4 text-sm text-gray-600">
+              <li><Link href="/policies/shipping" className="hover:text-black transition-colors">Shipping Policy</Link></li>
+              <li><Link href="/policies/exchange" className="hover:text-black transition-colors">Exchange Policy</Link></li>
+              <li><Link href="/policies/privacy" className="hover:text-black transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/policies/terms" className="hover:text-black transition-colors">Terms & Conditions</Link></li>
+              <li><Link href="/faq" className="hover:text-black transition-colors">FAQ</Link></li>
             </ul>
           </div>
-          
+
+          {/* Newsletter */}
           <div>
-            <h3 className="uppercase tracking-widest text-sm font-medium mb-6">Newsletter</h3>
-            <p className="text-sm text-gray-400 mb-4">
-              Subscribe to receive updates, access to exclusive deals, and more.
-            </p>
-            <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
-              <Input 
+            <h4 className="font-bold uppercase tracking-widest text-sm mb-6">Newsletter</h4>
+            <p className="text-sm text-gray-600 mb-4">Subscribe to receive updates, access to exclusive deals, and more.</p>
+            <form className="flex flex-col gap-3">
+              <input 
                 type="email" 
                 placeholder="Enter your email" 
-                className="bg-transparent border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-gray-500" 
+                className="bg-transparent border border-gray-300 p-3 text-sm focus:outline-none focus:border-black transition-colors"
               />
-              <Button className="w-full bg-white text-black hover:bg-gray-200">
+              <button className="bg-black text-white text-xs font-bold uppercase tracking-widest py-3 hover:bg-gray-800 transition-colors">
                 Subscribe
-              </Button>
+              </button>
             </form>
           </div>
         </div>
-        
-        <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
-          <p>© {new Date().getFullYear()} Veloura. All rights reserved.</p>
-          <div className="flex gap-4">
-            <Link href="/policies" className="hover:text-white">Privacy Policy</Link>
-            <Link href="/policies" className="hover:text-white">Terms of Service</Link>
+
+        <div className="border-t border-gray-200 pt-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <p className="text-xs text-gray-500 uppercase tracking-widest">
+            © {new Date().getFullYear()} ELEGANCE Fashion Pakistan. All rights reserved.
+          </p>
+          <div className="flex items-center gap-4">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4 opacity-50 grayscale hover:grayscale-0 transition-all" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" className="h-4 opacity-50 grayscale hover:grayscale-0 transition-all" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-4 opacity-50 grayscale hover:grayscale-0 transition-all" />
           </div>
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
