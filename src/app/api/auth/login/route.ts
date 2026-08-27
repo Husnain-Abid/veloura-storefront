@@ -1,28 +1,27 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { login } from "@/lib/auth";
+import dbConnect from "@/lib/mongodb";
+import { User } from "@/models";
 
 export async function POST(req: Request) {
   try {
+    await dbConnect();
     const { email, password } = await req.json();
 
-    const user = await db.query.users.findFirst({
-      where: eq(users.email, email),
-    });
+    const user = await User.findOne({ email });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    await login(user);
+    await login({ id: user._id, email: user.email, role: user.role, name: user.name });
 
     return NextResponse.json({
-      user: { id: user.id, email: user.email, role: user.role, name: user.name },
+      user: { id: user._id, email: user.email, role: user.role, name: user.name },
     });
   } catch (err) {
+    console.error(err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

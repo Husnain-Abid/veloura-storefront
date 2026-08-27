@@ -4,41 +4,37 @@ import { useEffect, useState } from "react";
 import { 
   Plus, 
   Search, 
-  MoreVertical, 
   Edit2, 
   Trash2, 
-  Eye,
   Filter,
   Check,
   X,
-  Package
+  Package,
+  Loader2
 } from "lucide-react";
 import { formatPrice, cn } from "@/lib/utils";
 import Link from "next/link";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchProducts, deleteProduct } from "@/store/slices/productSlice";
 
 export default function AdminProducts() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const { items: products, loading } = useAppSelector((state) => state.product);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch("/api/products?limit=50");
-        const data = await res.json();
-        setProducts(data);
-      } catch (err) {
-        console.error("Failed to fetch products", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
+    dispatch(fetchProducts("?limit=100"));
+  }, [dispatch]);
 
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this product? This will remove it from all active carts but historical orders will be preserved.")) {
+      dispatch(deleteProduct(id));
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -49,7 +45,7 @@ export default function AdminProducts() {
         </div>
         <Link 
           href="/admin/products/new"
-          className="bg-black text-white text-xs font-bold uppercase tracking-widest px-6 py-4 flex items-center gap-2 hover:bg-gray-800 transition-colors"
+          className="bg-black text-white text-xs font-bold uppercase tracking-widest px-6 py-4 flex items-center gap-2 hover:bg-gray-800 transition-colors rounded-lg"
         >
           <Plus className="w-4 h-4" />
           Add Product
@@ -91,7 +87,7 @@ export default function AdminProducts() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {loading ? (
+              {loading && products.length === 0 ? (
                 [...Array(5)].map((_, i) => (
                   <tr key={i} className="animate-pulse">
                     <td className="px-6 py-4"><div className="h-12 w-12 bg-gray-100 rounded" /></td>
@@ -106,19 +102,19 @@ export default function AdminProducts() {
                 <tr key={product.id} className="hover:bg-gray-50 transition-colors group">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-16 bg-gray-100 shrink-0">
+                      <div className="w-12 h-16 bg-gray-100 shrink-0 rounded overflow-hidden">
                         <img src={product.images[0]?.url} className="w-full h-full object-cover" />
                       </div>
                       <div>
                         <p className="text-sm font-bold uppercase line-clamp-1">{product.name}</p>
-                        <p className="text-xs text-gray-400 uppercase tracking-widest">{product.categoryId ? "Category" : "No Category"}</p>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-widest">{product.categoryId ? "Assigned" : "No Category"}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
                       <span className="text-sm font-bold">{formatPrice(product.price)}</span>
-                      {product.salePrice && <span className="text-xs text-red-500 line-through">{formatPrice(product.salePrice)}</span>}
+                      {product.salePrice && <span className="text-[10px] text-red-500 line-through">{formatPrice(product.salePrice)}</span>}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -142,11 +138,14 @@ export default function AdminProducts() {
                     {new Date(product.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center justify-end gap-2">
                       <Link href={`/admin/products/${product.id}`} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                         <Edit2 className="w-4 h-4 text-gray-600" />
                       </Link>
-                      <button className="p-2 hover:bg-red-50 rounded-lg transition-colors group/del">
+                      <button 
+                        onClick={() => handleDelete(product.id)}
+                        className="p-2 hover:bg-red-50 rounded-lg transition-colors group/del"
+                      >
                         <Trash2 className="w-4 h-4 text-red-600" />
                       </button>
                     </div>

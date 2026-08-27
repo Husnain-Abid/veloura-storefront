@@ -5,7 +5,8 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
-import { AuthProvider } from "@/context/AuthContext";
+import { StoreProvider } from "@/store/StoreProvider";
+import { AppInit } from "@/components/providers/AppInit";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -26,14 +27,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className="bg-white text-black antialiased font-sans">
-        <AuthProvider>
-          <AnnouncementBar />
-          <Header />
-          <main className="min-h-screen pt-[100px]">
-            {children}
-          </main>
-          <Footer />
-        </AuthProvider>
+        <StoreProvider>
+          <AppInit>
+            <AnnouncementBar />
+            <Header />
+            <main className="min-h-screen pt-[100px]">
+              {children}
+            </main>
+            <Footer />
+          </AppInit>
+        </StoreProvider>
       </body>
     </html>
   );

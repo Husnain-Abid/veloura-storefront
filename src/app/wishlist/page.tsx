@@ -1,14 +1,16 @@
 "use client";
 
-import { useWishlistStore, useCartStore } from "@/store/useStore";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { removeFromWishlist } from "@/store/slices/wishlistSlice";
+import { addItem } from "@/store/slices/cartSlice";
 import { formatPrice } from "@/lib/utils";
 import { Trash2, ShoppingBag, Heart } from "lucide-react";
 import Link from "next/link";
 import { ProductCard } from "@/components/product/ProductCard";
 
 export default function WishlistPage() {
-  const { items, removeItem } = useWishlistStore();
-  const addItem = useCartStore((state) => state.addItem);
+  const dispatch = useAppDispatch();
+  const items = useAppSelector((state) => state.wishlist.items);
 
   if (items.length === 0) {
     return (
@@ -18,7 +20,7 @@ export default function WishlistPage() {
         </div>
         <h1 className="text-4xl font-serif mb-4">Your Wishlist is Empty</h1>
         <p className="text-gray-500 max-w-md mx-auto mb-10 leading-relaxed">
-          Save items you love to your wishlist and they'll appear here.
+          Save items you love to your wishlist and they&apos;ll appear here.
         </p>
         <Link 
           href="/shop"
@@ -40,7 +42,7 @@ export default function WishlistPage() {
             <div className="aspect-[3/4] bg-gray-100 overflow-hidden relative">
               <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
               <button 
-                onClick={() => removeItem(item.id)}
+                onClick={() => dispatch(removeFromWishlist(item.id))}
                 className="absolute top-4 right-4 p-2 bg-white text-black hover:bg-black hover:text-white transition-all shadow-lg"
               >
                 <Trash2 className="w-4 h-4" />
@@ -54,11 +56,11 @@ export default function WishlistPage() {
                 <span className="text-sm font-bold">{formatPrice(item.price)}</span>
                 <button 
                   onClick={() => {
-                    addItem({
+                    dispatch(addItem({
                       ...item,
                       quantity: 1,
-                    });
-                    removeItem(item.id);
+                    }));
+                    dispatch(removeFromWishlist(item.id));
                   }}
                   className="text-[10px] font-bold uppercase tracking-widest border-b border-black pb-1 hover:opacity-50 transition-all"
                 >

@@ -19,7 +19,7 @@ export default function AboutPage() {
           <div className="text-center">
             <h2 className="text-3xl md:text-5xl font-serif mb-8 leading-tight">Crafting Elegance for the Modern Pakistani Woman</h2>
             <p className="text-gray-500 text-lg leading-relaxed italic">
-              "We started Elegance with a simple vision: to bridge the gap between high-end luxury and everyday comfort, specifically tailored for the modern lifestyle of Pakistan."
+              &quot;We started Elegance with a simple vision: to bridge the gap between high-end luxury and everyday comfort, specifically tailored for the modern lifestyle of Pakistan.&quot;
             </p>
           </div>
 
@@ -33,7 +33,7 @@ export default function AboutPage() {
             <div>
               <h3 className="text-sm font-bold uppercase tracking-widest mb-6 border-b border-black pb-2 inline-block">Our Mission</h3>
               <p className="text-gray-600 leading-relaxed text-sm">
-                To empower women through fashion that doesn't compromise on quality or ethics. We focus on premium materials, sustainable practices, and designs that make every woman feel confident and beautiful.
+                To empower women through fashion that doesn&apos;t compromise on quality or ethics. We focus on premium materials, sustainable practices, and designs that make every woman feel confident and beautiful.
               </p>
             </div>
           </div>

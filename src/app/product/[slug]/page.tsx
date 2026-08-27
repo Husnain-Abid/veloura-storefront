@@ -1,28 +1,32 @@
-import { db } from "@/db";
-import { products, reviews } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import dbConnect from "@/lib/mongodb";
+import { Product, Review } from "@/models";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { ProductDetails } from "@/components/product/ProductDetails";
 import { FeaturedProducts } from "@/components/home/FeaturedProducts";
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const product = await db.query.products.findFirst({
-    where: eq(products.slug, slug),
-  });
+export const dynamic = "force-dynamic";
 
-  if (!product) {
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  await dbConnect();
+  const { slug } = await params;
+  const productDoc = await Product.findOne({ slug });
+
+  if (!productDoc) {
     notFound();
   }
+
+  const product = productDoc.toObject();
+  product.id = product._id.toString();
 
   return (
     <div className="flex flex-col w-full">
       <div className="container mx-auto px-4 py-12">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-gray-400 mb-12">
-          <a href="/" className="hover:text-black transition-colors">Home</a>
+          <Link href="/" className="hover:text-black transition-colors">Home</Link>
           <span>/</span>
-          <a href="/shop" className="hover:text-black transition-colors">Shop</a>
+          <Link href="/shop" className="hover:text-black transition-colors">Shop</Link>
           <span>/</span>
           <span className="text-black">{product.name}</span>
         </nav>
@@ -74,7 +78,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                             </div>
                         </div>
                         <p className="text-sm text-gray-600 leading-relaxed italic">
-                            "The quality is exceptional. It fits perfectly and the fabric feels very premium. Definitely buying more from here!"
+                            &quot;The quality is exceptional. It fits perfectly and the fabric feels very premium. Definitely buying more from here!&quot;
                         </p>
                     </div>
                 ))}

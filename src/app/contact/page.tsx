@@ -1,6 +1,15 @@
 "use client";
 
 import { MapPin, Phone, Mail, Globe } from "lucide-react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+
+const ContactSchema = Yup.object().shape({
+  name: Yup.string().required("Required"),
+  email: Yup.string().email("Invalid email").required("Required"),
+  subject: Yup.string().required("Required"),
+  message: Yup.string().min(10, "Too short").required("Required"),
+});
 
 export default function ContactPage() {
   return (
@@ -12,7 +21,7 @@ export default function ContactPage() {
           <div>
             <h1 className="text-5xl md:text-7xl font-serif mb-8">Contact Us</h1>
             <p className="text-gray-500 text-lg leading-relaxed mb-12">
-              Have a question or just want to say hi? We'd love to hear from you. 
+              Have a question or just want to say hi? We&apos;d love to hear from you. 
               Our customer service team is available Monday to Saturday, 10 AM to 6 PM.
             </p>
 
@@ -57,32 +66,54 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Form */}
+          {/* Form with Formik + Yup */}
           <div className="bg-[#f9f9f9] p-8 lg:p-12">
             <h3 className="text-xl font-bold uppercase tracking-tighter mb-8">Send a Message</h3>
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Name</label>
-                  <input className="w-full p-4 text-sm border-b border-gray-200 focus:outline-none focus:border-black bg-transparent" placeholder="Your Name" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Email</label>
-                  <input className="w-full p-4 text-sm border-b border-gray-200 focus:outline-none focus:border-black bg-transparent" placeholder="Your Email" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Subject</label>
-                <input className="w-full p-4 text-sm border-b border-gray-200 focus:outline-none focus:border-black bg-transparent" placeholder="How can we help?" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Message</label>
-                <textarea rows={6} className="w-full p-4 text-sm border-b border-gray-200 focus:outline-none focus:border-black bg-transparent resize-none" placeholder="Your Message..." />
-              </div>
-              <button className="w-full bg-black text-white text-xs font-bold uppercase tracking-widest py-5 hover:bg-gray-800 transition-colors">
-                Send Message
-              </button>
-            </form>
+            <Formik
+              initialValues={{ name: "", email: "", subject: "", message: "" }}
+              validationSchema={ContactSchema}
+              onSubmit={(values, { setSubmitting, resetForm }) => {
+                setTimeout(() => {
+                  alert(JSON.stringify(values, null, 2));
+                  setSubmitting(false);
+                  resetForm();
+                }, 400);
+              }}
+            >
+              {({ isSubmitting }) => (
+                <Form className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Name</label>
+                      <Field name="name" className="w-full p-4 text-sm border-b border-gray-200 focus:outline-none focus:border-black bg-transparent" placeholder="Your Name" />
+                      <ErrorMessage name="name" component="div" className="text-red-500 text-[10px] uppercase font-bold" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Email</label>
+                      <Field name="email" type="email" className="w-full p-4 text-sm border-b border-gray-200 focus:outline-none focus:border-black bg-transparent" placeholder="Your Email" />
+                      <ErrorMessage name="email" component="div" className="text-red-500 text-[10px] uppercase font-bold" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Subject</label>
+                    <Field name="subject" className="w-full p-4 text-sm border-b border-gray-200 focus:outline-none focus:border-black bg-transparent" placeholder="How can we help?" />
+                    <ErrorMessage name="subject" component="div" className="text-red-500 text-[10px] uppercase font-bold" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Message</label>
+                    <Field name="message" as="textarea" rows={6} className="w-full p-4 text-sm border-b border-gray-200 focus:outline-none focus:border-black bg-transparent resize-none" placeholder="Your Message..." />
+                    <ErrorMessage name="message" component="div" className="text-red-500 text-[10px] uppercase font-bold" />
+                  </div>
+                  <button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className="w-full bg-black text-white text-xs font-bold uppercase tracking-widest py-5 hover:bg-gray-800 transition-colors disabled:opacity-50"
+                  >
+                    {isSubmitting ? "Sending..." : "Send Message"}
+                  </button>
+                </Form>
+              )}
+            </Formik>
           </div>
 
         </div>

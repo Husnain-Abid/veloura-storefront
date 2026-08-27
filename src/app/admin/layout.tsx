@@ -16,13 +16,15 @@ import {
   Menu,
   X
 } from "lucide-react";
-import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setMobileMenuOpen as setIsSidebarOpen } from "@/store/slices/uiSlice";
+import { performLogout } from "@/store/slices/authSlice";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/AuthContext";
 
 const SIDEBAR_LINKS = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Products", href: "/admin/products", icon: Package },
+  { name: "Categories", href: "/admin/categories", icon: Tag },
   { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
   { name: "Customers", href: "/admin/customers", icon: Users },
   { name: "Coupons", href: "/admin/coupons", icon: Tag },
@@ -33,10 +35,15 @@ const SIDEBAR_LINKS = [
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const dispatch = useAppDispatch();
+  const { isMobileMenuOpen: isSidebarOpen } = useAppSelector((state) => state.ui);
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user } = useAppSelector((state) => state.auth);
   const router = useRouter();
+
+  const logout = () => {
+    dispatch(performLogout());
+  };
 
   // If user is not admin, we might want to handle it here or in middleware
   // For now, let's assume middleware handles it, but as a safety:
@@ -59,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link href="/admin" className="text-xl font-bold tracking-tighter uppercase">
               Admin Panel
             </Link>
-            <button className="lg:hidden" onClick={() => setIsSidebarOpen(false)}>
+            <button className="lg:hidden" onClick={() => dispatch(setIsSidebarOpen(false))}>
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -101,7 +108,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8">
-          <button className="lg:hidden" onClick={() => setIsSidebarOpen(true)}>
+          <button className="lg:hidden" onClick={() => dispatch(setIsSidebarOpen(true))}>
             <Menu className="w-6 h-6" />
           </button>
           

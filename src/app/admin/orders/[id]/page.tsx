@@ -16,12 +16,15 @@ import {
 } from "lucide-react";
 import { formatPrice, cn } from "@/lib/utils";
 import { generateInvoicePDF } from "@/lib/invoice";
+import { useAppDispatch } from "@/store/hooks";
+import { updateOrderStatusThunk } from "@/store/slices/orderSlice";
 
 const STATUSES = [
   "pending", "confirmed", "processing", "packed", "shipped", "delivered", "cancelled", "exchange"
 ];
 
 export default function AdminOrderDetails() {
+  const dispatch = useAppDispatch();
   const { id } = useParams();
   const router = useRouter();
   const [order, setOrder] = useState<any>(null);
@@ -42,15 +45,14 @@ export default function AdminOrderDetails() {
 
   const handleStatusUpdate = async (newStatus: string) => {
     setUpdating(true);
-    const res = await fetch(`/api/admin/orders/update-status`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status: newStatus }),
-    });
-    if (res.ok) {
+    try {
+      await dispatch(updateOrderStatusThunk({ id: id as string, status: newStatus })).unwrap();
       setOrder({ ...order, status: newStatus });
+    } catch (err) {
+      alert("Failed to update status");
+    } finally {
+      setUpdating(false);
     }
-    setUpdating(false);
   };
 
   const handleDownloadInvoice = () => {

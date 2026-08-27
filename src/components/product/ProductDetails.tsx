@@ -14,20 +14,25 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatPrice, cn } from "@/lib/utils";
-import { useCartStore, useWishlistStore } from "@/store/useStore";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { addItem } from "@/store/slices/cartSlice";
+import { addToWishlist, removeFromWishlist } from "@/store/slices/wishlistSlice";
 
 interface ProductDetailsProps {
   product: any;
 }
 
 export const ProductDetails = ({ product }: ProductDetailsProps) => {
+  const dispatch = useAppDispatch();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState(product.colors[0]?.name || "");
   const [quantity, setQuantity] = useState(1);
-  
-  const addItem = useCartStore((state) => state.addItem);
-  const { addItem: addToWishlist, isInWishlist } = useWishlistStore();
+
+  const wishlistItems = useAppSelector((state) => state.wishlist.items);
+  const isInWishlist = wishlistItems.some((i) => i.id === product.id);
+
+  const productImages = product.images.map((img: any) => typeof img === 'string' ? img : img.url);
 
   const handleAddToCart = () => {
     if (!selectedSize && product.sizes.length > 0) {
@@ -35,16 +40,16 @@ export const ProductDetails = ({ product }: ProductDetailsProps) => {
       return;
     }
     
-    addItem({
+    dispatch(addItem({
       id: product.id,
       name: product.name,
       price: Number(product.salePrice || product.price),
-      image: product.images[0],
+      image: productImages[0],
       quantity: quantity,
       size: selectedSize,
       color: selectedColor,
       slug: product.slug,
-    });
+    }));
   };
 
   return (
@@ -57,13 +62,13 @@ export const ProductDetails = ({ product }: ProductDetailsProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            src={product.images[selectedImage]} 
+            src={productImages[selectedImage]} 
             alt={product.name}
             className="w-full h-full object-cover"
           />
         </div>
         <div className="grid grid-cols-4 gap-4">
-          {product.images.map((img: string, idx: number) => (
+          {productImages.map((img: string, idx: number) => (
             <button 
               key={idx}
               onClick={() => setSelectedImage(idx)}
@@ -175,17 +180,21 @@ export const ProductDetails = ({ product }: ProductDetailsProps) => {
             </button>
             <button 
               onClick={() => {
-                addToWishlist({
-                  id: product.id,
-                  name: product.name,
-                  price: Number(product.price),
-                  image: product.images[0],
-                  slug: product.slug,
-                });
+                if (isInWishlist) {
+                  dispatch(removeFromWishlist(product.id));
+                } else {
+                  dispatch(addToWishlist({
+                    id: product.id,
+                    name: product.name,
+                    price: Number(product.price),
+                    image: productImages[0],
+                    slug: product.slug,
+                  }));
+                }
               }}
               className="p-4 border border-gray-200 hover:border-black transition-colors"
             >
-              <Heart className={cn("w-5 h-5", isInWishlist(product.id) && "fill-black")} />
+              <Heart className={cn("w-5 h-5", isInWishlist && "fill-black")} />
             </button>
           </div>
 

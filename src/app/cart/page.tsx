@@ -1,14 +1,16 @@
 "use client";
 
-import { useCartStore } from "@/store/useStore";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { removeItem, updateQuantity, clearCart } from "@/store/slices/cartSlice";
 import { formatPrice, cn } from "@/lib/utils";
 import { Trash2, Minus, Plus, ArrowRight, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, subtotal } = useCartStore();
-  const total = subtotal();
+  const dispatch = useAppDispatch();
+  const items = useAppSelector((state) => state.cart.items);
+  const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const freeShippingThreshold = 5000;
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - total);
 
@@ -20,7 +22,7 @@ export default function CartPage() {
         </div>
         <h1 className="text-4xl font-serif mb-4">Your Bag is Empty</h1>
         <p className="text-gray-500 max-w-md mx-auto mb-10 leading-relaxed">
-          Looks like you haven't added anything to your bag yet. 
+          Looks like you haven&apos;t added anything to your bag yet. 
           Explore our new arrivals and find your perfect outfit.
         </p>
         <Link 
@@ -61,7 +63,7 @@ export default function CartPage() {
                     Size: {item.size} | Color: {item.color}
                   </span>
                   <button 
-                    onClick={() => removeItem(item.id, item.size, item.color)}
+                    onClick={() => dispatch(removeItem({ id: item.id, size: item.size, color: item.color }))}
                     className="mt-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-red-600 transition-colors w-fit"
                   >
                     <Trash2 className="w-3 h-3" />
@@ -77,14 +79,14 @@ export default function CartPage() {
               <div className="flex justify-center">
                 <div className="flex items-center border border-gray-200 h-10">
                   <button 
-                    onClick={() => updateQuantity(item.id, item.quantity - 1, item.size, item.color)}
+                    onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1, size: item.size, color: item.color }))}
                     className="px-3 hover:bg-gray-50 h-full transition-colors"
                   >
                     <Minus className="w-3 h-3" />
                   </button>
                   <span className="w-10 text-center text-xs font-bold">{item.quantity}</span>
                   <button 
-                    onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
+                    onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1, size: item.size, color: item.color }))}
                     className="px-3 hover:bg-gray-50 h-full transition-colors"
                   >
                     <Plus className="w-3 h-3" />
@@ -107,7 +109,7 @@ export default function CartPage() {
               Continue Shopping
             </Link>
             <button 
-              onClick={() => useCartStore.getState().clearCart()}
+              onClick={() => dispatch(clearCart())}
               className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
             >
               Clear Bag

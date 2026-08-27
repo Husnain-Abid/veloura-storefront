@@ -5,7 +5,9 @@ import Link from "next/link";
 import { Heart, ShoppingBag, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn, formatPrice } from "@/lib/utils";
-import { useCartStore, useWishlistStore } from "@/store/useStore";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { addItem } from "@/store/slices/cartSlice";
+import { addToWishlist, removeFromWishlist } from "@/store/slices/wishlistSlice";
 
 interface ProductCardProps {
   product: {
@@ -14,7 +16,7 @@ interface ProductCardProps {
     slug: string;
     price: number | string;
     salePrice?: number | string | null;
-    images: string[];
+    images: any[];
     stock: number;
     isNewArrival?: boolean;
     isFlashSale?: boolean;
@@ -22,37 +24,38 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
+  const dispatch = useAppDispatch();
   const [isHovered, setIsHovered] = useState(false);
-  const addItem = useCartStore((state) => state.addItem);
-  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const wishlistItems = useAppSelector((state) => state.wishlist.items);
+  const inWishlist = wishlistItems.some((i) => i.id === product.id);
 
-  const inWishlist = isInWishlist(product.id);
+  const productImages = product.images.map((img: any) => typeof img === 'string' ? img : img.url);
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     if (inWishlist) {
-      removeFromWishlist(product.id);
+      dispatch(removeFromWishlist(product.id));
     } else {
-      addToWishlist({
+      dispatch(addToWishlist({
         id: product.id,
         name: product.name,
         price: Number(product.price),
-        image: product.images[0],
+        image: productImages[0],
         slug: product.slug,
-      });
+      }));
     }
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    addItem({
+    dispatch(addItem({
       id: product.id,
       name: product.name,
       price: Number(product.salePrice || product.price),
-      image: product.images[0],
+      image: productImages[0],
       quantity: 1,
       slug: product.slug,
-    });
+    }));
   };
 
   return (
@@ -65,7 +68,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
         <Link href={`/product/${product.slug}`}>
           <img 
-            src={isHovered && product.images[1] ? product.images[1] : product.images[0]} 
+            src={isHovered && productImages[1] ? productImages[1] : productImages[0]} 
             alt={product.name}
             className="h-full w-full object-cover object-center transition-all duration-700 group-hover:scale-105"
           />

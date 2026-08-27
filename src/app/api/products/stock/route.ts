@@ -1,18 +1,21 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { products } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import dbConnect from "@/lib/mongodb";
+import { Product } from "@/models";
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
-  if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+  try {
+    await dbConnect();
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
 
-  const product = await db.query.products.findFirst({
-    where: eq(products.id, id),
-  });
+    const product = await Product.findById(id).select("stock");
 
-  if (!product) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!product) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  return NextResponse.json({ stock: product.stock });
+    return NextResponse.json({ stock: product.stock });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
 }

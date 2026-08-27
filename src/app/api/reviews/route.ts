@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { reviews, products } from "@/db/schema";
+import dbConnect from "@/lib/mongodb";
+import { Review } from "@/models";
 import { getSession } from "@/lib/auth";
-import { eq, sql } from "drizzle-orm";
 
 export async function POST(req: Request) {
   try {
+    await dbConnect();
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -13,17 +13,21 @@ export async function POST(req: Request) {
 
     const { productId, rating, comment, userName } = await req.json();
 
-    const [newReview] = await db.insert(reviews).values({
+    const newReview = await Review.create({
       productId,
       userId: session.id,
       userName,
       rating,
       comment,
-      isApproved: false, // Requires admin approval
-    }).returning();
+      isApproved: false,
+    });
 
-    return NextResponse.json(newReview);
+    const obj = newReview.toObject();
+    obj.id = obj._id.toString();
+
+    return NextResponse.json(obj);
   } catch (err) {
+    console.error(err);
     return NextResponse.json({ error: "Failed to submit review" }, { status: 500 });
   }
 }

@@ -1,30 +1,35 @@
-import { db } from "@/db";
-import { products, categories } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import dbConnect from "@/lib/mongodb";
+import { Product, Category } from "@/models";
 import { ProductListing } from "@/components/product/ProductListing";
 import { Suspense } from "react";
+import Link from "next/link";
+
+export const dynamic = "force-dynamic";
 
 export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string, sort?: string, q?: string }> }) {
+  await dbConnect();
   const params = await searchParams;
   
-  let conditions = [];
+  let query: any = {};
   if (params.category) {
-    const cat = await db.query.categories.findFirst({
-      where: eq(categories.slug, params.category),
-    });
+    const cat = await Category.findOne({ slug: params.category });
     if (cat) {
-      conditions.push(eq(products.categoryId, cat.id));
+      query.categoryId = cat._id;
     }
   }
 
-  const allProducts = await db.select().from(products).where(and(...conditions));
-  const allCategories = await db.select().from(categories);
+  const results = await Product.find(query);
+  const allProducts = results.map(p => {
+    const obj = p.toObject();
+    obj.id = obj._id.toString();
+    return obj;
+  });
 
   return (
     <div className="container mx-auto px-4 py-12">
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-gray-400 mb-8">
-        <a href="/" className="hover:text-black transition-colors">Home</a>
+        <Link href="/" className="hover:text-black transition-colors">Home</Link>
         <span>/</span>
         <span className="text-black">Shop</span>
       </nav>

@@ -32,7 +32,7 @@ export default function ExchangePolicy() {
 
         <section className="bg-gray-50 p-8 border border-gray-100 italic">
           <p>
-            "We value our customers and strive to ensure you are happy with your purchase. While we don't offer refunds, we are more than happy to help you find an alternative style or size."
+            &quot;We value our customers and strive to ensure you are happy with your purchase. While we don&apos;t offer refunds, we are more than happy to help you find an alternative style or size.&quot;
           </p>
         </section>
       </div>

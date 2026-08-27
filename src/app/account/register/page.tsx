@@ -1,88 +1,91 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { ArrowRight } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAppSelector } from "@/store/hooks";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { formatPrice } from "@/lib/utils";
+import Link from "next/link";
 
-export default function RegisterPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const { login } = useAuth();
+export default function AccountPage() {
+  const { user, loading } = useAppSelector((state) => state.auth);
   const router = useRouter();
+  const [orders, setOrders] = useState<any[]>([]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      login(data.user);
-      router.push("/");
-    } else {
-      const data = await res.json();
-      setError(data.error);
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/account/login");
     }
-  };
+  }, [user, loading, router]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (user) {
+        const res = await fetch("/api/orders/user");
+        if (res.ok) {
+          const data = await res.json();
+          setOrders(data);
+        }
+      }
+    };
+    fetchOrders();
+  }, [user]);
+
+  if (loading || !user) return <div className="container mx-auto p-24 text-center">Loading...</div>;
 
   return (
-    <div className="container mx-auto px-4 py-24 min-h-[70vh] flex flex-col items-center justify-center">
-      <div className="w-full max-w-md">
-        <h1 className="text-4xl md:text-5xl font-serif mb-8 text-center uppercase tracking-tighter">Create Account</h1>
-        
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          {error && <p className="text-red-500 text-xs text-center">{error}</p>}
-          <div className="space-y-4">
-            <input 
-              type="text" 
-              placeholder="Full Name" 
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-4 text-sm border border-gray-200 focus:outline-none focus:border-black bg-white"
-              required
-            />
-            <input 
-              type="email" 
-              placeholder="Email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-4 text-sm border border-gray-200 focus:outline-none focus:border-black bg-white"
-              required
-            />
-            <input 
-              type="password" 
-              placeholder="Password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-4 text-sm border border-gray-200 focus:outline-none focus:border-black bg-white"
-              required
-            />
+    <div className="container mx-auto px-4 py-24">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-5xl font-serif mb-12">My Account</h1>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+          {/* Profile Info */}
+          <div className="lg:col-span-1 space-y-8">
+            <div>
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Profile Details</h4>
+              <p className="text-sm font-bold uppercase">{user.name}</p>
+              <p className="text-sm text-gray-500">{user.email}</p>
+            </div>
+            <div className="pt-8 border-t border-gray-100">
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Saved Addresses</h4>
+              <p className="text-xs text-gray-500 italic">No addresses saved yet.</p>
+            </div>
           </div>
 
-          <button 
-            type="submit"
-            className="w-full bg-black text-white text-xs font-bold uppercase tracking-widest py-5 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
-          >
-            Create Account <ArrowRight className="w-4 h-4" />
-          </button>
-        </form>
-
-        <div className="mt-12 pt-8 border-t border-gray-100 text-center">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">Already have an account?</p>
-          <Link 
-            href="/account/login"
-            className="inline-block text-xs font-bold uppercase tracking-widest border-b border-black pb-1 hover:text-gray-500 hover:border-gray-500 transition-colors"
-          >
-            Login Here
-          </Link>
+          {/* Order History */}
+          <div className="lg:col-span-3">
+            <h2 className="text-2xl font-serif mb-8">Order History</h2>
+            
+            {orders.length > 0 ? (
+              <div className="space-y-6">
+                {orders.map((order) => (
+                  <div key={order.id} className="border border-gray-100 p-6 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Order #{order.orderNumber}</span>
+                      <span className="text-sm font-bold uppercase">{new Date(order.createdAt).toLocaleDateString()}</span>
+                      <span className="text-xs text-gray-500">{order.items?.length || 0} Items</span>
+                    </div>
+                    <div className="flex flex-col items-center md:items-end gap-1">
+                      <span className="text-sm font-bold">{formatPrice(order.total)}</span>
+                      <span className="bg-black text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1">
+                        {order.status}
+                      </span>
+                    </div>
+                    <Link 
+                      href={`/account/orders/${order.id}`}
+                      className="text-[10px] font-bold uppercase tracking-widest border-b border-black pb-1"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-24 text-center bg-gray-50">
+                <p className="text-gray-500 text-sm uppercase tracking-widest mb-6">You haven&apos;t placed any orders yet.</p>
+                <Link href="/shop" className="text-xs font-bold uppercase tracking-widest border-b border-black pb-1">Start Shopping</Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

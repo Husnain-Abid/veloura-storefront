@@ -9,7 +9,8 @@ import {
   ArrowRight 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCartStore } from "@/store/useStore";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { removeItem, updateQuantity } from "@/store/slices/cartSlice";
 import { formatPrice, cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -19,8 +20,9 @@ interface CartDrawerProps {
 }
 
 export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
-  const { items, removeItem, updateQuantity, subtotal } = useCartStore();
-  const total = subtotal();
+  const dispatch = useAppDispatch();
+  const items = useAppSelector((state) => state.cart.items);
+  const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const freeShippingThreshold = 5000;
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - total);
 
@@ -87,7 +89,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                           {item.name}
                         </Link>
                         <button 
-                          onClick={() => removeItem(item.id, item.size, item.color)}
+                          onClick={() => dispatch(removeItem({ id: item.id, size: item.size, color: item.color }))}
                           className="text-gray-400 hover:text-black"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -99,14 +101,14 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                       <div className="mt-auto flex justify-between items-center">
                         <div className="flex items-center border border-gray-200">
                           <button 
-                            onClick={() => updateQuantity(item.id, item.quantity - 1, item.size, item.color)}
+                            onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1, size: item.size, color: item.color }))}
                             className="p-1 hover:bg-gray-50"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <span className="w-8 text-center text-[10px] font-bold">{item.quantity}</span>
                           <button 
-                            onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
+                            onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1, size: item.size, color: item.color }))}
                             className="p-1 hover:bg-gray-50"
                           >
                             <Plus className="w-3 h-3" />

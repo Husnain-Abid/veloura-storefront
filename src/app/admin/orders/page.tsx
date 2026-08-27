@@ -3,17 +3,15 @@
 import { useEffect, useState } from "react";
 import { 
   Search, 
-  MoreVertical, 
   Eye,
   Filter,
-  Check,
-  Truck,
   Package,
-  Clock,
-  ChevronRight
+  Loader2
 } from "lucide-react";
 import { formatPrice, cn } from "@/lib/utils";
 import Link from "next/link";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchAdminOrders } from "@/store/slices/orderSlice";
 
 const STATUS_COLORS = {
   pending: "bg-yellow-50 text-yellow-600",
@@ -27,25 +25,13 @@ const STATUS_COLORS = {
 };
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const { adminOrders: orders, loading } = useAppSelector((state) => state.order);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        // We'll need a new admin API for all orders
-        const res = await fetch("/api/admin/orders");
-        const data = await res.json();
-        setOrders(data);
-      } catch (err) {
-        console.error("Failed to fetch orders", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
-  }, []);
+    dispatch(fetchAdminOrders());
+  }, [dispatch]);
 
   const filteredOrders = orders.filter(o => 
     o.orderNumber.toLowerCase().includes(searchQuery.toLowerCase())
@@ -85,7 +71,7 @@ export default function AdminOrders() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {loading ? (
+              {loading && orders.length === 0 ? (
                 [...Array(5)].map((_, i) => (
                   <tr key={i} className="animate-pulse">
                     <td colSpan={6} className="px-6 py-8">
@@ -102,7 +88,7 @@ export default function AdminOrders() {
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
                       <span className="text-sm font-bold uppercase">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</span>
-                      <span className="text-xs text-gray-400">{order.shippingAddress.city}</span>
+                      <span className="text-[10px] text-gray-400 uppercase tracking-widest">{order.shippingAddress.city}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm font-bold">{formatPrice(order.total)}</td>

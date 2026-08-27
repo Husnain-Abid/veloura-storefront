@@ -1,50 +1,63 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { products, categories } from "@/db/schema";
-import { eq, and, gte, lte, or, ilike, desc, asc } from "drizzle-orm";
+import dbConnect from "@/lib/mongodb";
+import { Product, Category } from "@/models";
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const category = searchParams.get("category");
-  const minPrice = searchParams.get("minPrice");
-  const maxPrice = searchParams.get("maxPrice");
-  const q = searchParams.get("q");
-  const sort = searchParams.get("sort");
-  const limit = parseInt(searchParams.get("limit") || "12");
-  const offset = parseInt(searchParams.get("offset") || "0");
+  try {
+    await dbConnect();
+    const { searchParams } = new URL(req.url);
+    const category = searchParams.get("category");
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+    const q = searchParams.get("q");
+    const sort = searchParams.get("sort");
+    const limit = parseInt(searchParams.get("limit") || "12");
+    const offset = parseInt(searchParams.get("offset") || "0");
 
-  let conditions = [];
+    let query: any = {};
 
-  if (category) {
-    const cat = await db.query.categories.findFirst({
-      where: eq(categories.slug, category),
-    });
-    if (cat) {
-      conditions.push(eq(products.categoryId, cat.id));
+    if (category) {
+      const cat = await Category.findOne({ slug: category });
+      if (cat) {
+        query.categoryId = cat._id;
+      }
     }
-  }
 
-  if (minPrice) {
-    conditions.push(gte(products.price, minPrice));
-  }
-  if (maxPrice) {
-    conditions.push(lte(products.price, maxPrice));
-  }
-  if (q) {
-    conditions.push(or(ilike(products.name, `%${q}%`), ilike(products.description, `%${q}%`)));
-  }
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
 
-  const orderBy = sort === "price-low" 
-    ? [asc(products.price)] 
-    : sort === "price-high" 
-    ? [desc(products.price)] 
-    : [desc(products.createdAt)];
+    if (q) {
+      query.$or = [
+        { name: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+      ];
+    }
 
-  const results = await db.select().from(products)
-    .where(and(...conditions))
-    .orderBy(...orderBy)
-    .limit(limit)
-    .offset(offset);
-  
-  return NextResponse.json(results);
+    let sortOption: any = { createdAt: -1 };
+    if (sort === "price-low") {
+      sortOption = { price: 1 };
+    } else if (sort === "price-high") {
+      sortOption = { price: -1 };
+    }
+
+    const results = await Product.find(query)
+      .sort(sortOption)
+      .skip(offset)
+      .limit(limit);
+
+    // Transform _id to id for frontend compatibility
+    const products = results.map(p => {
+      const obj = p.toObject();
+      obj.id = obj._id.toString();
+      return obj;
+    });
+
+    return NextResponse.json(products);
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
+  }
 }

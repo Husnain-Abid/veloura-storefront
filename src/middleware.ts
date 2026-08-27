@@ -3,7 +3,8 @@ import type { NextRequest } from 'next/server';
 import { getSession } from './lib/auth';
 
 export async function middleware(request: NextRequest) {
-  const session = await getSession();
+  const sessionValue = request.cookies.get("session")?.value;
+  const session = await getSession(sessionValue);
 
   // Protect account routes
   if (request.nextUrl.pathname.startsWith('/account')) {

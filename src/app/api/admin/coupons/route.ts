@@ -1,18 +1,27 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { coupons } from "@/db/schema";
+import dbConnect from "@/lib/mongodb";
+import { Coupon } from "@/models";
 import { getSession } from "@/lib/auth";
-import { desc } from "drizzle-orm";
 
 export async function GET() {
-  const session = await getSession();
-  if (!session || session.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    await dbConnect();
+    const session = await getSession();
+    if (!session || session.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const allCoupons = await Coupon.find({}).sort({ createdAt: -1 });
+
+    const transformed = allCoupons.map(c => {
+      const obj = c.toObject();
+      obj.id = obj._id.toString();
+      return obj;
+    });
+
+    return NextResponse.json(transformed);
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
-
-  const allCoupons = await db.query.coupons.findMany({
-    orderBy: [desc(coupons.createdAt)],
-  });
-
-  return NextResponse.json(allCoupons);
 }

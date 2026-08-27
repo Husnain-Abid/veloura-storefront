@@ -1,6 +1,5 @@
-import { db } from "@/db";
-import { products } from "@/db/schema";
-import { eq, desc, and } from "drizzle-orm";
+import dbConnect from "@/lib/mongodb";
+import { Product } from "@/models";
 import { ProductCard } from "@/components/product/ProductCard";
 import Link from "next/link";
 
@@ -11,22 +10,27 @@ interface FeaturedProductsProps {
 }
 
 export const FeaturedProducts = async ({ title, subtitle, type }: FeaturedProductsProps) => {
-  let conditions = [];
+  await dbConnect();
+  
+  let query: any = {};
 
   if (type === "featured") {
-    conditions.push(eq(products.isFeatured, true));
+    query.isFeatured = true;
   } else if (type === "new") {
-    conditions.push(eq(products.isNewArrival, true));
+    query.isNewArrival = true;
   } else if (type === "bestseller") {
-    conditions.push(eq(products.isBestSeller, true));
+    query.isBestSeller = true;
   } else if (type === "sale") {
-    conditions.push(eq(products.isFlashSale, true));
+    query.isFlashSale = true;
   }
 
-  const data = await db.select().from(products)
-    .where(and(...conditions))
-    .limit(4)
-    .offset(0);
+  const data = await Product.find(query).limit(4);
+
+  const products = data.map(p => {
+    const obj = p.toObject();
+    obj.id = obj._id.toString();
+    return obj;
+  });
 
   return (
     <section className="py-24 container mx-auto px-4">
@@ -45,7 +49,7 @@ export const FeaturedProducts = async ({ title, subtitle, type }: FeaturedProduc
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-        {data.map((product) => (
+        {products.map((product) => (
           <ProductCard key={product.id} product={product as any} />
         ))}
       </div>

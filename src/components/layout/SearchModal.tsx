@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { X, Search, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useAppDispatch } from "@/store/hooks";
+import { setSearchOpen } from "@/store/slices/uiSlice";
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -11,16 +13,17 @@ interface SearchModalProps {
 }
 
 export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
+  const dispatch = useAppDispatch();
   const [query, setQuery] = useState("");
   
   // Close on ESC
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") dispatch(setSearchOpen(false));
     };
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
-  }, [onClose]);
+  }, [dispatch]);
 
   return (
     <AnimatePresence>

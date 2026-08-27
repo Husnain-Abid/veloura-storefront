@@ -12,7 +12,7 @@ export const Footer = () => {
               ELEGANCE
             </Link>
             <p className="text-gray-600 text-sm leading-relaxed mb-6">
-              Premium women's fashion destination in Pakistan. We bring you the latest in Western Wear and Luxury Intimates.
+              Premium women&apos;s fashion destination in Pakistan. We bring you the latest in Western Wear and Luxury Intimates.
             </p>
             <div className="flex items-center space-x-4">
               <Link href="#" className="hover:text-gray-400 transition-colors"><Globe className="w-5 h-5" /></Link>

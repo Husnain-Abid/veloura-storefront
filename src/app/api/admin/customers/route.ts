@@ -1,19 +1,27 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { users } from "@/db/schema";
+import dbConnect from "@/lib/mongodb";
+import { User } from "@/models";
 import { getSession } from "@/lib/auth";
-import { eq, desc } from "drizzle-orm";
 
 export async function GET() {
-  const session = await getSession();
-  if (!session || session.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    await dbConnect();
+    const session = await getSession();
+    if (!session || session.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const allCustomers = await User.find({ role: "customer" }).sort({ createdAt: -1 });
+
+    const transformed = allCustomers.map(c => {
+      const obj = c.toObject();
+      obj.id = obj._id.toString();
+      return obj;
+    });
+
+    return NextResponse.json(transformed);
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
-
-  const allCustomers = await db.query.users.findMany({
-    where: eq(users.role, "customer"),
-    orderBy: [desc(users.createdAt)],
-  });
-
-  return NextResponse.json(allCustomers);
 }

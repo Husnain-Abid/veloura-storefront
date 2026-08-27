@@ -1,12 +1,21 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { categories } from "@/db/schema";
-import { isNull, eq } from "drizzle-orm";
+import dbConnect from "@/lib/mongodb";
+import { Category } from "@/models";
 
 export async function GET() {
-  const allCategories = await db.query.categories.findMany({
-    where: isNull(categories.parentId),
-  });
+  try {
+    await dbConnect();
+    const allCategories = await Category.find({ parentId: null });
+    
+    const transformed = allCategories.map(c => {
+      const obj = c.toObject();
+      obj.id = obj._id.toString();
+      return obj;
+    });
 
-  return NextResponse.json(allCategories);
+    return NextResponse.json(transformed);
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
 }
