@@ -219,13 +219,18 @@ export default function AdminOrderDetails() {
      INVOICE
   ========================================================== */
 
-  const handleDownloadInvoice = () => {
-    if (!order) return;
+  // const handleDownloadInvoice = () => {
+  //   if (!order) return;
 
-    const doc = generateInvoicePDF(order);
+  //   const doc = generateInvoicePDF(order);
 
-    doc.save(`Invoice-${order.orderNumber}.pdf`);
-  };
+  //   doc.save(`Invoice-${order.orderNumber}.pdf`);
+  // };
+const handleDownloadInvoice = () => {
+  if (!order) return;
+
+  generateInvoicePDF(order);
+};
 
   /* =========================================================
      ORDER TOTAL ITEMS
