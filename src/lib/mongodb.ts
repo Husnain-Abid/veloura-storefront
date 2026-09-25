@@ -8,9 +8,9 @@ if (!MONGODB_URI) {
 
 /**
  * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
- */
+  * in development. This prevents connections growing exponentially
+   * during API Route usage.
+    */
 let cached = (global as any).mongoose;
 
 if (!cached) {

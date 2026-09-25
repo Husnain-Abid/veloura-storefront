@@ -119,21 +119,46 @@ const NAV_LINKS = [
 
 function MegaMenu({
   onClose,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   onClose: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -10 }}
+      initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.22 }}
-      className="absolute left-0 right-0 top-full z-[55] hidden border-b border-gray-200 bg-white shadow-xl lg:block"
+      exit={{ opacity: 0, y: -8 }}
+      transition={{
+        duration: 0.2,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      className="
+        absolute
+        left-1/2
+        top-full
+        z-[100]
+        hidden
+        w-screen
+        -translate-x-1/2
+        border-b
+        border-gray-200
+        bg-white
+        shadow-2xl
+        lg:block
+      "
     >
       <div className="mx-auto grid max-w-[1440px] grid-cols-3 gap-12 px-10 py-10">
-        {/* Categories */}
+        {/* ---------------------------------------------------------------- */}
+        {/* Categories                                                       */}
+        {/* ---------------------------------------------------------------- */}
+
         <div>
-          <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">
+          <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">
             Shop Collection
           </p>
 
@@ -141,7 +166,7 @@ function MegaMenu({
             <Link
               href="/shop"
               onClick={onClose}
-              className="block font-serif text-2xl transition-colors hover:text-gray-500"
+              className="group block font-serif text-2xl transition-colors hover:text-gray-500"
             >
               View All
             </Link>
@@ -149,7 +174,7 @@ function MegaMenu({
             <Link
               href="/shop?category=new-arrivals"
               onClick={onClose}
-              className="block text-sm uppercase tracking-widest transition-colors hover:text-gray-500"
+              className="group block text-sm uppercase tracking-widest transition-colors hover:text-gray-500"
             >
               New Arrivals
             </Link>
@@ -157,7 +182,7 @@ function MegaMenu({
             <Link
               href="/shop?category=western-wear"
               onClick={onClose}
-              className="block text-sm uppercase tracking-widest transition-colors hover:text-gray-500"
+              className="group block text-sm uppercase tracking-widest transition-colors hover:text-gray-500"
             >
               Western Wear
             </Link>
@@ -165,7 +190,7 @@ function MegaMenu({
             <Link
               href="/shop?category=undergarments"
               onClick={onClose}
-              className="block text-sm uppercase tracking-widest transition-colors hover:text-gray-500"
+              className="group block text-sm uppercase tracking-widest transition-colors hover:text-gray-500"
             >
               Undergarments
             </Link>
@@ -173,42 +198,52 @@ function MegaMenu({
             <Link
               href="/shop?category=flash-sale"
               onClick={onClose}
-              className="block text-sm font-bold uppercase tracking-widest text-red-600"
+              className="group block text-sm font-bold uppercase tracking-widest text-red-600 transition-colors hover:text-red-700"
             >
               Flash Sale
             </Link>
           </div>
         </div>
 
-        {/* Featured */}
+        {/* ---------------------------------------------------------------- */}
+        {/* Featured                                                         */}
+        {/* ---------------------------------------------------------------- */}
+
         <div>
-          <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">
+          <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">
             Featured
           </p>
 
-          <div className="space-y-5">
-            <Link
-              href="/shop?category=new-arrivals"
-              onClick={onClose}
-              className="group block"
-            >
-              <div className="overflow-hidden bg-gray-100">
-                <div className="flex h-32 items-center justify-center bg-gradient-to-r from-gray-100 to-gray-200">
-                  <span className="font-serif text-3xl text-gray-500">
-                    New Collection
-                  </span>
-                </div>
+          <Link
+            href="/shop?category=new-arrivals"
+            onClick={onClose}
+            className="group block"
+          >
+            <div className="relative h-40 overflow-hidden bg-gray-100">
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-gray-100 to-gray-200">
+                <span className="font-serif text-3xl text-gray-500 transition-transform duration-500 group-hover:scale-105">
+                  New Collection
+                </span>
               </div>
+            </div>
 
-              <p className="mt-3 text-xs font-bold uppercase tracking-widest">
-                New Arrivals →
+            <div className="mt-4 flex items-center justify-between">
+              <p className="text-xs font-bold uppercase tracking-widest">
+                New Arrivals
               </p>
-            </Link>
-          </div>
+
+              <span className="text-xs transition-transform duration-300 group-hover:translate-x-1">
+                →
+              </span>
+            </div>
+          </Link>
         </div>
 
-        {/* Sale */}
-        <div className="relative overflow-hidden bg-black p-8 text-white">
+        {/* ---------------------------------------------------------------- */}
+        {/* Sale                                                             */}
+        {/* ---------------------------------------------------------------- */}
+
+        <div className="relative min-h-[250px] overflow-hidden bg-black p-8 text-white">
           <div className="flex h-full flex-col justify-between">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">
@@ -219,7 +254,7 @@ function MegaMenu({
                 Flash Sale
               </h3>
 
-              <p className="mt-3 text-sm leading-6 text-gray-300">
+              <p className="mt-4 max-w-xs text-sm leading-6 text-gray-300">
                 Discover selected styles at exclusive prices.
               </p>
             </div>
@@ -227,7 +262,7 @@ function MegaMenu({
             <Link
               href="/shop?category=flash-sale"
               onClick={onClose}
-              className="mt-8 inline-block border-b border-white pb-1 text-xs font-bold uppercase tracking-widest"
+              className="mt-8 inline-flex w-fit border-b border-white pb-1 text-xs font-bold uppercase tracking-widest transition-opacity hover:opacity-60"
             >
               Shop Sale →
             </Link>
@@ -270,11 +305,18 @@ export const Header = () => {
     (state) => state.auth.user
   );
 
-  /* ------------------------------- Scroll -------------------------------- */
+  /* ---------------------------------------------------------------------- */
+  /* Scroll                                                                 */
+  /* ---------------------------------------------------------------------- */
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 24);
+
+      // Close mega menu when scrolling
+      if (window.scrollY > 24) {
+        setMegaMenu(false);
+      }
     };
 
     handleScroll();
@@ -288,11 +330,26 @@ export const Header = () => {
     };
   }, []);
 
-  /* ------------------------------ Mega Menu ------------------------------- */
+  /* ---------------------------------------------------------------------- */
+  /* Cleanup timer                                                          */
+  /* ---------------------------------------------------------------------- */
+
+  useEffect(() => {
+    return () => {
+      if (closeTimer.current) {
+        clearTimeout(closeTimer.current);
+      }
+    };
+  }, []);
+
+  /* ---------------------------------------------------------------------- */
+  /* Mega Menu                                                              */
+  /* ---------------------------------------------------------------------- */
 
   const openMega = () => {
     if (closeTimer.current) {
       clearTimeout(closeTimer.current);
+      closeTimer.current = null;
     }
 
     setMegaMenu(true);
@@ -305,16 +362,33 @@ export const Header = () => {
 
     closeTimer.current = setTimeout(() => {
       setMegaMenu(false);
-    }, 150);
+    }, 250);
   };
 
-  /* -------------------------------- Logout -------------------------------- */
+  const keepMegaOpen = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
 
-  const handleLogout = () => {
-    dispatch(performLogout());
+    setMegaMenu(true);
   };
 
-  /* ------------------------------ Cart Count ------------------------------ */
+  const handleMegaClick = () => {
+    setMegaMenu(false);
+  };
+
+  /* ---------------------------------------------------------------------- */
+  /* Logout                                                                 */
+  /* ---------------------------------------------------------------------- */
+
+  const handleLogout = async () => {
+    await dispatch(performLogout());
+  };
+
+  /* ---------------------------------------------------------------------- */
+  /* Counts                                                                 */
+  /* ---------------------------------------------------------------------- */
 
   const cartCount = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -323,7 +397,9 @@ export const Header = () => {
 
   const wishlistCount = wishlistItems.length;
 
-  /* -------------------------------- Styles -------------------------------- */
+  /* ---------------------------------------------------------------------- */
+  /* Styles                                                                 */
+  /* ---------------------------------------------------------------------- */
 
   const iconButton =
     "relative flex h-10 w-10 items-center justify-center text-black transition-colors hover:text-gray-500";
@@ -345,17 +421,25 @@ export const Header = () => {
       {/* ================================================================== */}
 
       <header className="fixed inset-x-0 top-0 z-50">
-        {/* Announcement */}
+        {/* -------------------------------------------------------------- */}
+        {/* Announcement                                                     */}
+        {/* -------------------------------------------------------------- */}
+
         <div
           className={cn(
             "overflow-hidden transition-all duration-500",
-            scrolled ? "max-h-0" : "max-h-9"
+            scrolled
+              ? "max-h-0"
+              : "max-h-9"
           )}
         >
           <AnnouncementBar />
         </div>
 
-        {/* Main Header */}
+        {/* -------------------------------------------------------------- */}
+        {/* Main Header                                                      */}
+        {/* -------------------------------------------------------------- */}
+
         <div
           className={cn(
             "border-b transition-all duration-500",
@@ -368,27 +452,36 @@ export const Header = () => {
             <div
               className={cn(
                 "grid grid-cols-[1fr_auto_1fr] items-center transition-all duration-500",
-                scrolled ? "h-14" : "h-[72px]"
+                scrolled
+                  ? "h-14"
+                  : "h-[72px]"
               )}
             >
-              {/* ========================================================== */}
-              {/* Left                                                        */}
-              {/* ========================================================== */}
+              {/* ======================================================== */}
+              {/* Left                                                       */}
+              {/* ======================================================== */}
 
               <div className="flex items-center">
-                {/* Mobile menu */}
+                {/* Mobile Menu */}
+
                 <button
-                  className={cn(iconButton, "lg:hidden")}
+                  className={cn(
+                    iconButton,
+                    "lg:hidden"
+                  )}
                   aria-label="Open menu"
                   aria-expanded={isMobileMenuOpen}
                   onClick={() =>
-                    dispatch(setMobileMenuOpen(true))
+                    dispatch(
+                      setMobileMenuOpen(true)
+                    )
                   }
                 >
                   <Menu className="h-5 w-5" />
                 </button>
 
-                {/* Desktop quick links */}
+                {/* Desktop Quick Links */}
+
                 <div className="hidden items-center gap-6 lg:flex">
                   <Link
                     href="/shop?category=new-arrivals"
@@ -406,9 +499,9 @@ export const Header = () => {
                 </div>
               </div>
 
-              {/* ========================================================== */}
-              {/* Logo                                                        */}
-              {/* ========================================================== */}
+              {/* ======================================================== */}
+              {/* Logo                                                       */}
+              {/* ======================================================== */}
 
               <Link
                 href="/"
@@ -431,23 +524,27 @@ export const Header = () => {
                 </span>
               </Link>
 
-              {/* ========================================================== */}
-              {/* Right                                                        */}
-              {/* ========================================================== */}
+              {/* ======================================================== */}
+              {/* Right                                                       */}
+              {/* ======================================================== */}
 
               <div className="flex items-center justify-end gap-0.5 sm:gap-1">
                 {/* Search */}
+
                 <button
                   className={iconButton}
                   aria-label="Search"
                   onClick={() =>
-                    dispatch(setSearchOpen(true))
+                    dispatch(
+                      setSearchOpen(true)
+                    )
                   }
                 >
                   <Search className="h-[19px] w-[19px]" />
                 </button>
 
                 {/* Account */}
+
                 {user ? (
                   <>
                     <Link
@@ -486,6 +583,7 @@ export const Header = () => {
                 )}
 
                 {/* Wishlist */}
+
                 <Link
                   href="/wishlist"
                   className={iconButton}
@@ -503,11 +601,14 @@ export const Header = () => {
                 </Link>
 
                 {/* Cart */}
+
                 <button
                   className={iconButton}
                   aria-label={`Shopping bag, ${cartCount} items`}
                   onClick={() =>
-                    dispatch(setCartOpen(true))
+                    dispatch(
+                      setCartOpen(true)
+                    )
                   }
                 >
                   <ShoppingBag className="h-[19px] w-[19px]" />
@@ -517,16 +618,16 @@ export const Header = () => {
               </div>
             </div>
 
-            {/* ============================================================ */}
-            {/* Desktop Navigation                                            */}
-            {/* ============================================================ */}
+            {/* ========================================================== */}
+            {/* Desktop Navigation                                           */}
+            {/* ========================================================== */}
 
             <nav
               aria-label="Main navigation"
               className={cn(
-                "hidden items-center justify-center gap-8 overflow-hidden transition-all duration-500 lg:flex",
+                "hidden items-center justify-center gap-8 overflow-visible transition-all duration-500 lg:flex",
                 scrolled
-                  ? "max-h-0 opacity-0"
+                  ? "max-h-0 py-0 opacity-0"
                   : "max-h-14 py-3"
               )}
             >
@@ -534,28 +635,44 @@ export const Header = () => {
                 const hasChildren =
                   !!link.children;
 
+                const isShop =
+                  link.name === "Shop";
+
                 return (
                   <div
                     key={link.name}
                     className="relative"
                     onMouseEnter={
-                      hasChildren
+                      isShop
                         ? openMega
                         : undefined
                     }
                     onMouseLeave={
-                      hasChildren
+                      isShop
                         ? closeMega
                         : undefined
                     }
                   >
+                    {/* Invisible hover bridge */}
+                    {isShop && megaMenu && (
+                      <div className="absolute left-1/2 top-full h-3 w-screen -translate-x-1/2" />
+                    )}
+
                     <Link
                       href={link.href}
+                      aria-expanded={
+                        hasChildren
+                          ? megaMenu
+                          : undefined
+                      }
                       className={cn(
-                        "flex items-center gap-1 px-1 py-1 text-[11px] font-bold uppercase tracking-[0.18em] transition-colors",
+                        "relative flex items-center gap-1 px-1 py-1 text-[11px] font-bold uppercase tracking-[0.18em] transition-colors",
                         pathname === link.href
                           ? "text-black"
-                          : "text-gray-600 hover:text-black"
+                          : "text-gray-600 hover:text-black",
+                        isShop &&
+                          megaMenu &&
+                          "text-black"
                       )}
                     >
                       {link.name}
@@ -563,31 +680,44 @@ export const Header = () => {
                       {hasChildren && (
                         <ChevronDown
                           className={cn(
-                            "h-3 w-3 transition-transform",
-                            megaMenu &&
-                              link.name ===
-                                "Shop" &&
+                            "h-3 w-3 transition-transform duration-200",
+                            isShop &&
+                              megaMenu &&
                               "rotate-180"
                           )}
                         />
                       )}
+
+                      {/* Active underline */}
+
+                      <span
+                        className={cn(
+                          "absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-black transition-transform duration-300",
+                          pathname === link.href &&
+                            "scale-x-100",
+                          isShop &&
+                            megaMenu &&
+                            "scale-x-100"
+                        )}
+                      />
                     </Link>
 
-                    <span
-                      className={cn(
-                        "absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 bg-black transition-transform duration-300",
-                        pathname === link.href &&
-                          "scale-x-100"
-                      )}
-                    />
+                    {/* ================================================== */}
+                    {/* Mega Menu                                            */}
+                    {/* ================================================== */}
 
-                    {/* Mega menu only for Shop */}
-                    {link.name === "Shop" && (
+                    {isShop && (
                       <AnimatePresence>
                         {megaMenu && (
                           <MegaMenu
-                            onClose={() =>
-                              setMegaMenu(false)
+                            onClose={
+                              handleMegaClick
+                            }
+                            onMouseEnter={
+                              keepMegaOpen
+                            }
+                            onMouseLeave={
+                              closeMega
                             }
                           />
                         )}
@@ -601,27 +731,38 @@ export const Header = () => {
         </div>
       </header>
 
-      {/* Header spacer */}
+      {/* ================================================================== */}
+      {/* Header Spacer                                                      */}
+      {/* ================================================================== */}
+
       <div
         className="h-[108px] lg:h-[157px]"
         aria-hidden
       />
 
       {/* ================================================================== */}
-      {/* Cart / Search                                                      */}
+      {/* Cart Drawer                                                        */}
       {/* ================================================================== */}
 
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() =>
-          dispatch(setCartOpen(false))
+          dispatch(
+            setCartOpen(false)
+          )
         }
       />
+
+      {/* ================================================================== */}
+      {/* Search Modal                                                       */}
+      {/* ================================================================== */}
 
       <SearchModal
         isOpen={isSearchOpen}
         onClose={() =>
-          dispatch(setSearchOpen(false))
+          dispatch(
+            setSearchOpen(false)
+          )
         }
       />
 
@@ -633,7 +774,9 @@ export const Header = () => {
         {isMobileMenuOpen && (
           <MobileMenu
             onClose={() =>
-              dispatch(setMobileMenuOpen(false))
+              dispatch(
+                setMobileMenuOpen(false)
+              )
             }
           />
         )}
@@ -654,12 +797,12 @@ function MobileMenu({
   const dispatch = useAppDispatch();
   const reduceMotion = useReducedMotion();
 
-  const [expanded, setExpanded] = useState<
-    string | null
-  >(null);
+  const [expanded, setExpanded] =
+    useState<string | null>(null);
 
   const wishlistCount = useAppSelector(
-    (state) => state.wishlist.items.length
+    (state) =>
+      state.wishlist.items.length
   );
 
   const cartCount = useAppSelector(
@@ -673,7 +816,10 @@ function MobileMenu({
 
   return (
     <>
-      {/* Overlay */}
+      {/* ---------------------------------------------------------------- */}
+      {/* Overlay                                                          */}
+      {/* ---------------------------------------------------------------- */}
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -682,7 +828,10 @@ function MobileMenu({
         className="fixed inset-0 z-[60] bg-black/50"
       />
 
-      {/* Drawer */}
+      {/* ---------------------------------------------------------------- */}
+      {/* Drawer                                                           */}
+      {/* ---------------------------------------------------------------- */}
+
       <motion.aside
         initial={
           reduceMotion
@@ -699,6 +848,7 @@ function MobileMenu({
         className="fixed left-0 top-0 z-[70] flex h-full w-full max-w-[350px] flex-col bg-white"
       >
         {/* Header */}
+
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-5">
           <span className="font-serif text-xl uppercase tracking-[0.25em]">
             ELEGANCE
@@ -714,9 +864,11 @@ function MobileMenu({
         </div>
 
         {/* Navigation */}
+
         <nav className="flex-1 overflow-y-auto px-6 py-5">
           <ul>
             {/* Home */}
+
             <li>
               <Link
                 href="/"
@@ -728,6 +880,7 @@ function MobileMenu({
             </li>
 
             {/* Shop */}
+
             <li className="border-b border-gray-100">
               <button
                 className="flex w-full items-center justify-between py-4 font-serif text-xl"
@@ -767,6 +920,9 @@ function MobileMenu({
                     exit={{
                       height: 0,
                       opacity: 0,
+                    }}
+                    transition={{
+                      duration: 0.3,
                     }}
                     className="overflow-hidden"
                   >
@@ -817,6 +973,7 @@ function MobileMenu({
             </li>
 
             {/* Other links */}
+
             {[
               {
                 name: "About",
@@ -847,6 +1004,7 @@ function MobileMenu({
             ))}
 
             {/* Sale */}
+
             <li>
               <Link
                 href="/shop?category=flash-sale"
@@ -860,6 +1018,7 @@ function MobileMenu({
         </nav>
 
         {/* Bottom actions */}
+
         <div className="grid grid-cols-3 border-t border-gray-200">
           <Link
             href="/account"
@@ -911,6 +1070,6 @@ function MobileMenu({
       </motion.aside>
     </>
   );
-}
+};
 
 export default Header;

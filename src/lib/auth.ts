@@ -20,18 +20,49 @@ export async function decrypt(input: string): Promise<any> {
   return payload;
 }
 
+// export async function login(user: any) {
+//   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+//   const session = await encrypt({ 
+//     id: user.id, 
+//     email: user.email, 
+//     role: user.role,
+//     name: user.name 
+//   });
+
+//   const cookieStore = await cookies();
+//   cookieStore.set("session", session, { expires, httpOnly: true, secure: true });
+// }
+
 export async function login(user: any) {
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const session = await encrypt({ 
-    id: user.id, 
-    email: user.email, 
+
+  const userId = user._id?.toString() || user.id?.toString();
+
+  if (!userId) {
+    throw new Error("User ID is missing");
+  }
+
+  const session = await encrypt({
+    id: userId,
+    email: user.email,
     role: user.role,
-    name: user.name 
+    name: user.name,
   });
 
   const cookieStore = await cookies();
-  cookieStore.set("session", session, { expires, httpOnly: true, secure: true });
+
+  cookieStore.set("session", session, {
+    expires,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+  });
 }
+
+
+
+
 
 export async function logout() {
   (await cookies()).set("session", "", { expires: new Date(0) });
