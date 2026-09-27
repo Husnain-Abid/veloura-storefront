@@ -631,7 +631,7 @@ const handleDownloadInvoice = () => {
 
             {/* Totals */}
             <div className="p-6 md:p-7 bg-gray-50 border-t border-gray-100">
-              <div className="ml-auto max-w-sm space-y-3">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
                     Subtotal
@@ -847,7 +847,7 @@ const handleDownloadInvoice = () => {
           </div>
 
           {/* Payment */}
-          <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
+          {/* <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
             <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
               <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center">
                 <CreditCard className="w-4 h-4 text-gray-600" />
@@ -880,7 +880,7 @@ const handleDownloadInvoice = () => {
                 {order.paymentStatus || "pending"}
               </span>
             </div>
-          </div>
+          </div> */}
 
           {/* Order Summary */}
           <div className="bg-black text-white rounded-xl shadow-sm p-6">

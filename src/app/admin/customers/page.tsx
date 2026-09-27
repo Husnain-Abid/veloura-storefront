@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { 
-  Search, 
-  User, 
+import {
+  Search,
+  User,
   Mail,
   Calendar,
   ShoppingBag
 } from "lucide-react";
+import Link from "next/link";
 
 export default function AdminCustomers() {
   const [customers, setCustomers] = useState<any[]>([]);
@@ -68,7 +69,13 @@ export default function AdminCustomers() {
                     {new Date(customer.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="text-[10px] font-bold uppercase tracking-widest border-b border-black pb-1">View Profile</button>
+                    <Link
+                      href={`/admin/customers/${customer.id}`}
+                      className="text-[10px] font-bold uppercase tracking-widest border-b border-black pb-1 hover:opacity-60 transition"
+                    >
+                      View Profile
+                    </Link>
+
                   </td>
                 </tr>
               ))}
