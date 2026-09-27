@@ -5,22 +5,26 @@ const CATEGORIES = [
   {
     name: "Western Wear",
     slug: "western-wear",
-    image: "https://images.unsplash.com/photo-1539109132374-348218a1f2ad?q=80&w=800&auto=format&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop",
     gridSpan: "md:col-span-2 md:row-span-2",
   },
   {
     name: "Intimates",
     slug: "undergarments",
-    image: "https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?q=80&w=800&auto=format&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1582533561751-ef6f6ab93a2e?q=80&w=800&auto=format&fit=crop",
     gridSpan: "md:col-span-1 md:row-span-1",
   },
   {
     name: "New Arrivals",
     slug: "new-arrivals",
-    image: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=800&auto=format&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=800&auto=format&fit=crop",
     gridSpan: "md:col-span-1 md:row-span-1",
   },
 ];
+
 
 export const CategoryGrid = () => {
   return (
