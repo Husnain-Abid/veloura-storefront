@@ -46,3 +46,28 @@ h1, h2, h3, h4, h5, h6 {
     @apply antialiased;
   }
 }
+
+
+@keyframes veloura-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-veloura-marquee {
+  animation: veloura-marquee 35s linear infinite;
+}
+
+.animate-veloura-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-veloura-marquee {
+    animation: none;
+  }
+}

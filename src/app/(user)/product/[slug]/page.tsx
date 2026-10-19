@@ -1,14 +1,21 @@
+
 import dbConnect from "@/lib/mongodb";
-import { Product, Review } from "@/models";
+import { Product } from "@/models";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ProductDetails } from "@/components/product/ProductDetails";
 import { FeaturedProducts } from "@/components/home/FeaturedProducts";
+import { ArrowLeft, ArrowUpRight, Star } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   await dbConnect();
+
   const { slug } = await params;
   const productDoc = await Product.findOne({ slug });
 
@@ -17,74 +24,176 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   }
 
   const product = productDoc.toObject();
+
   product.id = product._id.toString();
 
+  const rating = Number(product.rating) || 0;
+
   return (
-    <div className="flex flex-col w-full">
-      <div className="container mx-auto px-4 py-12">
-        {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest text-gray-400 mb-12">
-          <Link href="/" className="hover:text-black transition-colors">Home</Link>
-          <span>/</span>
-          <Link href="/shop" className="hover:text-black transition-colors">Shop</Link>
-          <span>/</span>
-          <span className="text-black">{product.name}</span>
-        </nav>
+    <main className="flex min-h-screen w-full flex-col bg-[#faf9f6] text-[#211e1a]">
+      {/* Breadcrumb navigation */}
+      <div className="border-b border-[#e9e2d8]">
+        <div className="mx-auto flex max-w-[1600px] items-center gap-2 overflow-hidden px-5 py-5 text-[9px] font-medium uppercase tracking-[0.18em] sm:px-8 sm:text-[10px] lg:px-16">
+          <Link
+            href="/"
+            className="shrink-0 text-[#81796f] transition-colors hover:text-black"
+          >
+            Home
+          </Link>
+
+          <span className="text-[#c1b5a6]">/</span>
+
+          <Link
+            href="/shop"
+            className="shrink-0 text-[#81796f] transition-colors hover:text-black"
+          >
+            Shop
+          </Link>
+
+          <span className="text-[#c1b5a6]">/</span>
+
+          <span className="truncate text-[#211e1a]">
+            {product.name}
+          </span>
+        </div>
+      </div>
+
+      {/* Product details */}
+      <section className="mx-auto w-full max-w-[1600px] px-5 py-8 sm:px-8 sm:py-12 lg:px-16 lg:py-16">
+        <div className="mb-7 flex items-center justify-between sm:mb-10">
+          <Link
+            href="/shop"
+            className="group inline-flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.18em] text-[#81796f] transition-colors hover:text-[#211e1a] sm:text-[10px]"
+          >
+            <ArrowLeft
+              size={15}
+              className="transition-transform group-hover:-translate-x-1"
+            />
+            Continue Shopping
+          </Link>
+
+          <span className="hidden items-center gap-2 text-[9px] uppercase tracking-[0.2em] text-[#a88c68] sm:flex sm:text-[10px]">
+            <span className="h-px w-6 bg-[#a88c68]" />
+            The Veloura Collection
+          </span>
+        </div>
 
         <ProductDetails product={product} />
-      </div>
+      </section>
 
-      <div className="mt-24 bg-gray-50">
-        <FeaturedProducts 
-          title="Related Products" 
-          subtitle="You May Also Like" 
-          type="featured" 
+      {/* Related products */}
+      <section className="border-y border-[#e9e2d8] bg-white">
+        <FeaturedProducts
+          title="You May Also Love"
+          subtitle="Selected for You"
+          type="featured"
         />
-      </div>
+      </section>
 
-      <div className="container mx-auto px-4 py-24">
-         <h2 className="text-4xl font-serif text-center mb-12">Customer Reviews</h2>
-         <div className="max-w-4xl mx-auto space-y-12">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-12 border-b border-gray-100">
-                <div className="text-center">
-                    <span className="text-6xl font-serif block mb-2">{product.rating}</span>
-                    <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Average Rating</span>
-                </div>
-                <div className="md:col-span-2 space-y-2">
-                    {[5, 4, 3, 2, 1].map((star) => (
-                        <div key={star} className="flex items-center gap-4">
-                            <span className="text-[10px] font-bold w-4">{star}</span>
-                            <div className="flex-1 h-1 bg-gray-100">
-                                <div 
-                                    className="h-full bg-black" 
-                                    style={{ width: star === 5 ? '80%' : star === 4 ? '15%' : '5%' }} 
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
+      {/* Customer reviews */}
+      <section
+        id="reviews"
+        className="bg-[#faf9f6] px-5 py-20 sm:px-8 sm:py-24 lg:px-16 lg:py-28"
+      >
+        <div className="mx-auto max-w-5xl">
+          {/* Section heading */}
+          <div className="mb-12 text-center sm:mb-16">
+            <div className="mb-5 flex items-center justify-center gap-3">
+              <span className="h-px w-8 bg-[#a88c68]" />
+
+              <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-[#8c7b66]">
+                The Customer Experience
+              </span>
+
+              <span className="h-px w-8 bg-[#a88c68]" />
             </div>
-            
-            <div className="space-y-8">
-                {[1, 2].map((i) => (
-                    <div key={i} className="pb-8 border-b border-gray-50 last:border-0">
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center font-bold text-xs">
-                                S
-                            </div>
-                            <div>
-                                <h4 className="text-xs font-bold uppercase tracking-widest">Sarah Ahmed</h4>
-                                <span className="text-[10px] text-gray-400 uppercase">Oct 12, 2024</span>
-                            </div>
-                        </div>
-                        <p className="text-sm text-gray-600 leading-relaxed italic">
-                            &quot;The quality is exceptional. It fits perfectly and the fabric feels very premium. Definitely buying more from here!&quot;
-                        </p>
-                    </div>
+
+            <h2 className="font-serif text-4xl font-normal tracking-[-0.035em] sm:text-5xl">
+              The Details Matter
+            </h2>
+
+            <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#77716a]">
+              Discover what customers think about their Veloura
+              experience.
+            </p>
+          </div>
+
+          {/* Rating overview */}
+          <div className="grid grid-cols-1 gap-8 border-y border-[#e5ddd2] py-10 sm:grid-cols-3 sm:items-center sm:gap-10 sm:py-12">
+            <div className="text-center">
+              <span className="mb-3 block font-serif text-6xl font-normal">
+                {rating.toFixed(1)}
+              </span>
+
+              <div
+                className="mb-3 flex justify-center gap-1"
+                aria-label={`${rating} out of 5 stars`}
+              >
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={15}
+                    strokeWidth={1.2}
+                    className={
+                      star <= Math.round(rating)
+                        ? "fill-[#a88c68] text-[#a88c68]"
+                        : "text-[#d8cfc3]"
+                    }
+                  />
                 ))}
+              </div>
+
+              <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-[#81796f]">
+                Product Rating
+              </p>
             </div>
-         </div>
-      </div>
-    </div>
+
+            <div className="text-center sm:col-span-2 sm:border-l sm:border-[#e5ddd2] sm:pl-10 sm:text-left">
+              <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#8c7b66]">
+                Quality over everything
+              </span>
+
+              <h3 className="mt-3 font-serif text-2xl sm:text-3xl">
+                Made to be worn. Made to be loved.
+              </h3>
+
+              <p className="mt-3 max-w-lg text-sm leading-7 text-[#77716a]">
+                Every piece should feel right, from the fabric and
+                fit to the finishing details. Your feedback helps
+                us keep improving the experience.
+              </p>
+            </div>
+          </div>
+
+          {/* Actual review records should be rendered here */}
+          <div className="py-14 text-center sm:py-16">
+            <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-[#e5ddd2] text-[#a88c68]">
+              <Star size={19} strokeWidth={1.2} />
+            </div>
+
+            <h3 className="font-serif text-2xl sm:text-3xl">
+              Your experience matters.
+            </h3>
+
+            <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[#77716a]">
+              Customer reviews will appear here when actual reviews
+              are available for this product.
+            </p>
+
+            <Link
+              href="/shop"
+              className="group mt-7 inline-flex items-center gap-3 border-b border-[#b8aa98] pb-2 text-[10px] font-semibold uppercase tracking-[0.2em] transition-colors hover:border-[#211e1a]"
+            >
+              Discover More Styles
+
+              <ArrowUpRight
+                size={14}
+                className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }

@@ -1,6 +1,7 @@
 import { Hero } from "@/components/home/Hero";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { FeaturedProducts } from "@/components/home/FeaturedProducts";
+import { Marquee } from "@/components/shared/Marquee";
 
 export const dynamic = "force-dynamic";
 
@@ -8,20 +9,32 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full">
       <Hero />
-      <CategoryGrid />
-      <FeaturedProducts 
-        title="New Arrivals" 
-        subtitle="Fresh Trends" 
-        type="new" 
+
+      <Marquee
+        items={[
+          "Free delivery over PKR 5,000",
+          "Cash on Delivery nationwide",
+          "Easy 7-day exchange",
+          "Made in Pakistan",
+          "New drops every Friday",
+          "Discreet intimate shipping",
+        ]}
       />
-      
+
+      <CategoryGrid />
+      <FeaturedProducts
+        title="New Arrivals"
+        subtitle="Fresh Trends"
+        type="new"
+      />
+
       {/* Editorial Section */}
       <section className="py-24 bg-[#1a1a1a] text-white overflow-hidden">
         <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="relative group">
             <div className="aspect-[4/5] overflow-hidden">
-              <img 
-                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop" 
+              <img
+                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop"
                 alt="Editorial"
                 className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110"
               />
@@ -32,7 +45,7 @@ export default function Home() {
               </p>
             </div>
           </div>
-          
+
           <div className="flex flex-col items-start max-w-xl">
             <span className="text-xs font-bold uppercase tracking-[0.4em] mb-6 text-gray-500">The Story</span>
             <h2 className="text-5xl md:text-7xl font-serif mb-8 leading-tight">Crafted for the Modern Woman</h2>
@@ -46,10 +59,10 @@ export default function Home() {
         </div>
       </section>
 
-      <FeaturedProducts 
-        title="Best Sellers" 
-        subtitle="Customer Favorites" 
-        type="bestseller" 
+      <FeaturedProducts
+        title="Best Sellers"
+        subtitle="Customer Favorites"
+        type="bestseller"
       />
 
       {/* Brand Values */}
@@ -72,10 +85,10 @@ export default function Home() {
         </div>
       </section>
 
-      <FeaturedProducts 
-        title="Flash Sale" 
-        subtitle="Limited Time" 
-        type="sale" 
+      <FeaturedProducts
+        title="Flash Sale"
+        subtitle="Limited Time"
+        type="sale"
       />
     </div>
   );
